@@ -21,20 +21,15 @@ app.get('/api/course', (req, res) => {
 
 app.get('/api/course/:id', (req, res) => {
     const course = courses.find((c) => c.id === Number(req.params.id));
-    if (!course) res.status(404).send('The course with the given ID not found.')
+    if (!course) return res.status(404).send('The course with the given ID not found.')
     res.send(course);
 });
 
 app.post('/api/course', (req, res) => {
 
     const { error } = validateCourse(req.body);
-    if (error) {
-        // Bad Request
-        res.status(400).send(error.details[0].message);
-        return;
-    }
-
-
+    if (error) return res.status(400).send(error.details[0].message);
+        
     const course = {
         id: courses.length + 1,
         name: req.body.name
@@ -45,15 +40,11 @@ app.post('/api/course', (req, res) => {
 
 app.put('/api/course/:id', (req, res) => {
     const course = courses.find((c) => c.id === Number(req.params.id));
-    if (!course) res.status(404).send('The course with the given ID not found.');
+    if (!course) return res.status(404).send('The course with the given ID not found.');
 
     const { error } = validateCourse(req.body);
-    if (error) {
-        // Bad Request
-        res.status(400).send(error.details[0].message);
-        return;
-    }
-
+    if (error) return res.status(400).send(error.details[0].message);
+ 
     course.name = req.body.name;
     res.send(course);
 
@@ -61,12 +52,12 @@ app.put('/api/course/:id', (req, res) => {
 
 app.delete('/api/course/:id', (req, res) => {
     const course = courses.find((c) => c.id === Number(req.params.id));
-    if (!course) res.status(404).send('The course with the given ID not found.');
+    if (!course) return res.status(404).send('The course with the given ID not found.');
 
     const index = courses.indexOf(course);
     courses.splice(index, 1);
     res.send(course);
-})
+});
 
 
 const port = process.env.PORT || 3000;
@@ -77,6 +68,5 @@ function validateCourse(course) {
     const schema = {
         name: Joi.string().min(3).required()
     }
-
     return result = Joi.validate(course, schema);
 }
